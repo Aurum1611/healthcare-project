@@ -172,3 +172,56 @@ class DailyCheckupAPI(APIView):
         
         serializer = DailyCheckupSerializer(obj)
         return Response(serializer.data)
+
+
+class PatientDailyCheckupAPI(APIView):
+    
+    def get(self, request, pk=None, format=None):
+        if pk:
+            obj = DailyCheckup.objects.get(id=pk)
+            serializer = PatientDailyCheckupSerializer(obj)
+            return Response(serializer.data)
+        else:
+            objs = DailyCheckup.objects.all()
+            serializer = PatientDailyCheckupSerializer(objs, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data = request.data
+        
+        doc = DoctorData.objects.get(id=data['doctor'])
+        del data['doctor']
+        
+        patient_data = data['patient']
+        del data['patient']
+        
+        pat = None
+        if patient_data.get('id'):
+            # update patient if any new data
+            pat = Patient.objects.get(id=patient_data['id'])
+            
+            pat.patient_unique_id = patient_data.get('patient_unique_id', 
+                                                 pat.patient_unique_id)
+            pat.hospital = Hospital.objects.get(
+                id=patient_data.get('hospital', pat.hospital.id)
+            )
+            pat.name = patient_data.get('name', pat.name)
+            pat.gender = patient_data.get('gender', pat.gender)
+            pat.dob = patient_data.get('dob', pat.dob)
+            pat.city = patient_data.get('city', pat.city)
+            pat.created_on = patient_data.get('created_on', pat.created_on)
+            pat.active = patient_data.get('active', pat.active)
+            pat.save()
+        else:
+            # create new patient
+            hsp = Hospital.objects.get(id=patient_data['hospital'])
+            del patient_data['hospital']
+        
+            pat = Patient.objects.create(**patient_data, hospital=hsp)
+        
+        # create new dailycheckup object
+        obj = DailyCheckup.objects.create(**data, doctor=doc,
+                                          patient=pat)
+        
+        serializer = DailyCheckupSerializer(obj)
+        return Response(serializer.data)

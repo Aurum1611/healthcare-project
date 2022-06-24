@@ -23,4 +23,8 @@ urlpatterns = [
     
     path('dailycheckups/<int:pk>/', DailyCheckupAPI.as_view()),
     path('dailycheckups/', DailyCheckupAPI.as_view()),
+    
+    # Nested Endpoints
+    path('patientcheckups/<int:pk>/', PatientDailyCheckupAPI.as_view()),
+    path('patientcheckups/', PatientDailyCheckupAPI.as_view()),
 ]

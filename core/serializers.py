@@ -46,3 +46,15 @@ class DailyCheckupSerializer(serializers.ModelSerializer):
         fields = ('id', 'patient', 'height', 'weight',
                   'checkup_date', 'doctor_comment', 
                   'doctor', 'active')
+
+
+class PatientDailyCheckupSerializer(serializers.ModelSerializer):
+    
+    patient = PatientSerializer()
+    
+    
+    class Meta:
+        model = DailyCheckup
+        fields = ('id', 'patient', 'height', 'weight',
+                  'checkup_date', 'doctor_comment', 
+                  'doctor', 'active')
