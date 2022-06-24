@@ -38,6 +38,17 @@ class StateAPI(APIView):
             serializer = StateSerializer(objs, many=True)
             return Response(serializer.data)
 
+    def post(self, request, format=None):
+        data = request.data
+        
+        zone = Zone.objects.get(id=data['zone'])
+        del data['zone']
+        
+        obj = State.objects.create(**data, zone=zone)
+        
+        serializer = StateSerializer(obj)
+        return Response(serializer.data)
+
 
 class CityAPI(APIView):
     
@@ -50,6 +61,17 @@ class CityAPI(APIView):
             objs = City.objects.all()
             serializer = CitySerializer(objs, many=True)
             return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data = request.data
+        
+        st = State.objects.get(id=data['state'])
+        del data['state']
+        
+        obj = City.objects.create(**data, state=st)
+        
+        serializer = CitySerializer(obj)
+        return Response(serializer.data)
 
 
 class HospitalAPI(APIView):
@@ -64,6 +86,17 @@ class HospitalAPI(APIView):
             serializer = HospitalSerializer(objs, many=True)
             return Response(serializer.data)
 
+    def post(self, request, format=None):
+        data = request.data
+        
+        ct = City.objects.get(id=data['city'])
+        del data['city']
+        
+        obj = Hospital.objects.create(**data, city=ct)
+        
+        serializer = HospitalSerializer(obj)
+        return Response(serializer.data)
+
 
 class PatientAPI(APIView):
     
@@ -76,6 +109,17 @@ class PatientAPI(APIView):
             objs = Patient.objects.all()
             serializer = PatientSerializer(objs, many=True)
             return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data = request.data
+        
+        hsp = Hospital.objects.get(id=data['hospital'])
+        del data['hospital']
+        
+        obj = Patient.objects.create(**data, hospital=hsp)
+        
+        serializer = PatientSerializer(obj)
+        return Response(serializer.data)
 
 
 class DoctorDataAPI(APIView):
@@ -90,6 +134,17 @@ class DoctorDataAPI(APIView):
             serializer = DoctorDataSerializer(objs, many=True)
             return Response(serializer.data)
 
+    def post(self, request, format=None):
+        data = request.data
+        
+        hsp = Hospital.objects.get(id=data['hospital'])
+        del data['hospital']
+        
+        obj = DoctorData.objects.create(**data, hospital=hsp)
+        
+        serializer = DoctorDataSerializer(obj)
+        return Response(serializer.data)
+
 
 class DailyCheckupAPI(APIView):
     
@@ -102,3 +157,18 @@ class DailyCheckupAPI(APIView):
             objs = DailyCheckup.objects.all()
             serializer = DailyCheckupSerializer(objs, many=True)
             return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data = request.data
+        
+        doc = DoctorData.objects.get(id=data['doctor'])
+        del data['doctor']
+        
+        pat = Patient.objects.get(id=data['patient'])
+        del data['patient']
+        
+        obj = DailyCheckup.objects.create(**data, doctor=doc,
+                                          patient=pat)
+        
+        serializer = DailyCheckupSerializer(obj)
+        return Response(serializer.data)
