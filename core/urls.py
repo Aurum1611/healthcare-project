@@ -30,4 +30,7 @@ urlpatterns = [
     
     path('zonebaseddata/<int:zone_id>/', ZoneBasedDataAPI.as_view()),
     path('zonebaseddata/', ZoneBasedDataAPI.as_view()),
+    
+    path('locations/<int:pk>/', LocationAPI.as_view()),
+    path('locations/', LocationAPI.as_view()),
 ]

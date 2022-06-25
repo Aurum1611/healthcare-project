@@ -241,3 +241,58 @@ class ZoneBasedDataAPI(APIView):
             objs = DailyCheckup.objects.all()
             serializer = ZoneBasedDataSerializer(objs, many=True)
             return Response(serializer.data)
+
+
+# Api Zone, State and City
+class LocationAPI(APIView):
+    
+    def get(self, request, pk=None, format=None):
+        if pk:
+            obj = City.objects.get(id=pk)
+            serializer = LocationSerializer(obj)
+            return Response(serializer.data)
+        else:
+            objs = City.objects.all()
+            serializer = LocationSerializer(objs, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data = request.data
+        
+        state_data = data['state']
+        del data['state']
+        
+        zone_data = state_data['zone']
+        del state_data['zone']
+        
+        zn = None
+        if zone_data.get('id'):
+            # update zone if any new data
+            
+            zn = Zone.objects.get(id=zone_data['id'])
+            
+            zn.name = zone_data.get('name', zn.name)
+            zn.code = zone_data.get('code', zn.code)
+            zn.save()
+        else:
+            # create new zone
+            zn = Zone.objects.create(**zone_data)
+        
+        st = None
+        if state_data.get('id'):
+            # update state if any new data
+            st = State.objects.get(id=state_data['id'])
+            
+            st.zone = zn
+            st.name = state_data.get('name', st.name)
+            st.code = state_data.get('code', st.code)
+            st.save()
+        else:
+            # create new state
+            st = State.objects.create(**state_data, zone=zn)
+        
+        # create new dailycheckup object
+        obj = City.objects.create(**data, state=st)
+        
+        serializer = LocationSerializer(obj)
+        return Response(serializer.data)

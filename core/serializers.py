@@ -82,3 +82,24 @@ class ZoneBasedDataSerializer(serializers.ModelSerializer):
         fields = ('id', 'patient', 'height', 'weight',
                   'checkup_date', 'doctor_comment', 
                   'doctor', 'active')
+
+
+# Api Zone, State and City
+class RegionSerializer(serializers.ModelSerializer):
+    
+    zone = ZoneSerializer()
+    
+    
+    class Meta:
+        model = State
+        fields = ('id', 'name', 'code', 'zone')    
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    
+    state = RegionSerializer()
+    
+    
+    class Meta:
+        model = City
+        fields = ('id', 'name', 'code', 'state')
