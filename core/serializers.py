@@ -58,3 +58,27 @@ class PatientDailyCheckupSerializer(serializers.ModelSerializer):
         fields = ('id', 'patient', 'height', 'weight',
                   'checkup_date', 'doctor_comment', 
                   'doctor', 'active')
+
+
+# API to get the data from Patient, DailyCheckup and Hospital based on Zone_id
+class PatientHostpitalSerializer(serializers.ModelSerializer):
+    
+    hospital = HospitalSerializer()
+    
+    
+    class Meta:
+        model = Patient
+        fields = ('id', 'patient_unique_id', 'hospital', 'name',
+                  'gender', 'dob', 'city', 'created_on', 'active')
+
+
+class ZoneBasedDataSerializer(serializers.ModelSerializer):
+    
+    patient = PatientHostpitalSerializer()
+    
+    
+    class Meta:
+        model = DailyCheckup
+        fields = ('id', 'patient', 'height', 'weight',
+                  'checkup_date', 'doctor_comment', 
+                  'doctor', 'active')

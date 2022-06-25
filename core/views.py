@@ -225,3 +225,19 @@ class PatientDailyCheckupAPI(APIView):
         
         serializer = DailyCheckupSerializer(obj)
         return Response(serializer.data)
+
+
+# API to get the data from Patient, DailyCheckup and Hospital based on Zone_id
+class ZoneBasedDataAPI(APIView):
+    
+    def get(self, request, zone_id=None, format=None):
+        if zone_id:
+            objs = DailyCheckup.objects.filter(
+                patient__hospital__city__state__zone__id=zone_id
+            )
+            serializer = ZoneBasedDataSerializer(objs, many=True)
+            return Response(serializer.data)
+        else:
+            objs = DailyCheckup.objects.all()
+            serializer = ZoneBasedDataSerializer(objs, many=True)
+            return Response(serializer.data)

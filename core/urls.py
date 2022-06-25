@@ -27,4 +27,7 @@ urlpatterns = [
     # Nested Endpoints
     path('patientcheckups/<int:pk>/', PatientDailyCheckupAPI.as_view()),
     path('patientcheckups/', PatientDailyCheckupAPI.as_view()),
+    
+    path('zonebaseddata/<int:zone_id>/', ZoneBasedDataAPI.as_view()),
+    path('zonebaseddata/', ZoneBasedDataAPI.as_view()),
 ]
