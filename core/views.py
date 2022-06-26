@@ -373,8 +373,8 @@ class LocationAPI(APIView):
                 traceback.print_exc()
                 
                 # rollback
-                if zone_create: zn.delete()
-                if state_create: st.delete()
+                if zone_create and zn: zn.delete()
+                if state_create and st: st.delete()
                 
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
