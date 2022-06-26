@@ -63,3 +63,24 @@ class DailyCheckup(models.Model):
     doctor_comment = models.CharField(max_length=2500)
     doctor = models.ForeignKey(DoctorData, on_delete=models.DO_NOTHING)
     active = models.IntegerField(default=2)
+    
+    @property
+    def BMI(self):
+        if self.weight and self.height:
+            return self.weight / (self.height/100)**2
+        else:
+            return "BMI calculation requires non-zero weight and height."
+    
+    def find_BMI_results(self):
+        if self.BMI <= 18.4: 
+            return  "You are underweight." 
+        elif self.BMI <= 24.9: 
+            return "You are healthy." 
+        elif self.BMI <= 29.9: 
+            return "You are over weight." 
+        elif self.BMI <= 34.9: 
+            return "You are severely over weight." 
+        elif self.BMI <= 39.9: 
+            return "You are obese." 
+        else: 
+            return "You are severely obese."

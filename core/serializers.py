@@ -41,11 +41,17 @@ class DoctorDataSerializer(serializers.ModelSerializer):
 
 
 class DailyCheckupSerializer(serializers.ModelSerializer):
+    
+    BMI_results = serializers.SerializerMethodField()
+    
+    
     class Meta:
         model = DailyCheckup
-        fields = ('id', 'patient', 'height', 'weight',
-                  'checkup_date', 'doctor_comment', 
-                  'doctor', 'active')
+        fields = ('id', 'patient', 'height', 'weight', 'BMI', 'BMI_results',
+                  'checkup_date','doctor_comment', 'doctor', 'active')
+    
+    def get_BMI_results(self, obj):
+        return obj.find_BMI_results()
 
 
 class PatientDailyCheckupSerializer(serializers.ModelSerializer):
