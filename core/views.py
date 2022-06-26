@@ -330,6 +330,8 @@ class LocationAPI(APIView):
             if not (zone_data['name'] or state_data['name']):
                 raise Exception('field `name` cannot be empty')
             
+            zone_create = False
+            
             zn = None
             if zone_data.get('id'):
                 # update zone if any new data
@@ -341,7 +343,10 @@ class LocationAPI(APIView):
                 zn.save()
             else:
                 # create new zone
+                zone_create = True
                 zn = Zone.objects.create(**zone_data)
+            
+            state_create = False
             
             st = None
             if state_data.get('id'):
@@ -354,6 +359,7 @@ class LocationAPI(APIView):
                 st.save()
             else:
                 # create new state
+                state_create = True
                 st = State.objects.create(**state_data, zone=zn)
             
             # create new dailycheckup object
@@ -365,6 +371,11 @@ class LocationAPI(APIView):
         except Exception as err:
                 print(f'An Error has occured: {err=}')
                 traceback.print_exc()
+                
+                # rollback
+                if zone_create: zn.delete()
+                if state_create: st.delete()
+                
                 return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
