@@ -33,4 +33,7 @@ urlpatterns = [
     
     path('locations/<int:pk>/', LocationAPI.as_view()),
     path('locations/', LocationAPI.as_view()),
+    
+    path('alltables/<int:pk>/', AllTablesAPI.as_view()),
+    path('alltables/', AllTablesAPI.as_view()),
 ]

@@ -296,3 +296,70 @@ class LocationAPI(APIView):
         
         serializer = LocationSerializer(obj)
         return Response(serializer.data)
+
+
+# Using a single Api create a new entry in all the above tables
+class AllTablesAPI(APIView):
+    
+    def get(self, request, pk=None, format=None):
+        if pk:
+            obj = DailyCheckup.objects.get(id=pk)
+            serializer = AllTablesSerializer(obj)
+            return Response(serializer.data)
+        else:
+            objs = DailyCheckup.objects.all()
+            serializer = AllTablesSerializer(objs, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, format=None):
+        data = request.data
+        
+        doctor_data = data['doctor']
+        del data['doctor']
+        
+        patient_data = data['patient']
+        del data['patient']
+        
+        doc = pat = None
+        if doctor_data.get('id') or patient_data.get('id'):
+            return Response('id parameter for patient or doctordata unexpected', 
+                            status.HTTP_400_BAD_REQUEST)
+        else:
+            def create_new_hospital(hospital_data) -> Hospital:
+                city_data = hospital_data['city']
+                del hospital_data['city']
+                
+                state_data = city_data['state']
+                del city_data['state']
+                
+                zone_data = state_data['zone']
+                del state_data['zone']
+                
+                zn = Zone.objects.create(**zone_data)
+                st = State.objects.create(**state_data, zone=zn)
+                ct = City.objects.create(**city_data, state=st)
+                hospital = Hospital.objects.create(**hospital_data, city=ct)
+                return hospital
+            
+            # create new doctor
+            doctor_hospital = doctor_data['hospital']
+            del doctor_data['hospital']
+            
+            doc_hsp = create_new_hospital(doctor_hospital)
+
+            doc = DoctorData.objects.create(**doctor_data, hospital=doc_hsp)
+        
+            # create new patient
+            patient_hospital = patient_data['hospital']
+            del patient_data['hospital']
+            
+            pat_hsp = create_new_hospital(patient_hospital)
+        
+            pat = Patient.objects.create(**patient_data,
+                                         hospital=pat_hsp)
+        
+        # create new dailycheckup object
+        obj = DailyCheckup.objects.create(**data, doctor=doc, patient=pat)
+        
+        serializer = DailyCheckupSerializer(obj)
+        return Response(serializer.data)

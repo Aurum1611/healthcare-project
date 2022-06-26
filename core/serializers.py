@@ -103,3 +103,48 @@ class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = City
         fields = ('id', 'name', 'code', 'state')
+
+
+# Using a single Api create a new entry in all the above tables
+class HospitalLocationSerializer(serializers.ModelSerializer):
+    
+    city = LocationSerializer()
+    
+    
+    class Meta:
+        model = Hospital
+        fields = ('id', 'name', 'code', 'city', 'active')    
+
+
+class PatientSuperSerializer(serializers.ModelSerializer):
+    
+    hospital = HospitalLocationSerializer()
+    
+    
+    class Meta:
+        model = Patient
+        fields = ('id', 'patient_unique_id', 'hospital', 'name',
+                  'gender', 'dob', 'city', 'created_on', 'active')
+
+
+class DoctorSuperSerializer(serializers.ModelSerializer):
+    
+    hospital = HospitalLocationSerializer()
+    
+    
+    class Meta:
+        model = DoctorData
+        fields = ('id', 'name', 'email_id', 'code',
+                  'mobile_no', 'hospital', 'active')
+
+
+class AllTablesSerializer(serializers.ModelSerializer):
+    
+    patient = PatientSuperSerializer()
+    doctor = DoctorSuperSerializer()
+    
+    class Meta:
+        model = DailyCheckup
+        fields = ('id', 'patient', 'height', 'weight',
+                  'checkup_date', 'doctor_comment', 
+                  'doctor', 'active')
