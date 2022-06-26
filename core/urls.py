@@ -36,4 +36,7 @@ urlpatterns = [
     
     path('alltables/<int:pk>/', AllTablesAPI.as_view()),
     path('alltables/', AllTablesAPI.as_view()),
+    
+    path('allpatientchecks/<int:pk>/', AllPatientCheckupsAPI.as_view()),
+    path('allpatientchecks/', AllPatientCheckupsAPI.as_view()),
 ]

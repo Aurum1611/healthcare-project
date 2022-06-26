@@ -41,6 +41,10 @@ class Patient(models.Model):
     created_on = models.DateTimeField(blank=True, null=True)
     active = models.IntegerField(default=2)
 
+    @property
+    def daily_checkups(self):
+        return DailyCheckup.objects.filter(patient=self.id)
+
 
 class DoctorData(models.Model):
     name = models.CharField(max_length=400)

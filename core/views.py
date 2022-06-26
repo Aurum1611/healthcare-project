@@ -363,3 +363,17 @@ class AllTablesAPI(APIView):
         
         serializer = DailyCheckupSerializer(obj)
         return Response(serializer.data)
+
+
+# API to get patient data along with all daily_checkups of that patient
+class AllPatientCheckupsAPI(APIView):
+    
+    def get(self, request, pk=None, format=None):
+        if pk:
+            obj = Patient.objects.get(id=pk)
+            serializer = AllPatientCheckupsSerializer(obj)
+            return Response(serializer.data)
+        else:
+            objs = Patient.objects.all()
+            serializer = AllPatientCheckupsSerializer(objs, many=True)
+            return Response(serializer.data)

@@ -148,3 +148,15 @@ class AllTablesSerializer(serializers.ModelSerializer):
         fields = ('id', 'patient', 'height', 'weight',
                   'checkup_date', 'doctor_comment', 
                   'doctor', 'active')
+
+
+# API to get patient data along with all daily_checkups of that patient
+class AllPatientCheckupsSerializer(serializers.ModelSerializer):
+    
+    daily_checkups = DailyCheckupSerializer(many=True)
+    
+    
+    class Meta:
+        model = Patient
+        fields = ('id', 'patient_unique_id', 'hospital', 'name', 'gender',
+                  'dob', 'daily_checkups', 'city', 'created_on', 'active')
