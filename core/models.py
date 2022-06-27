@@ -5,11 +5,17 @@ class Zone(models.Model):
     name = models.CharField(max_length=200)
     code = models.CharField(max_length=200, null=True)
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class State(models.Model):
     name = models.CharField(max_length=200)
     code = models.CharField(max_length=200, null=True)
     zone = models.ForeignKey(Zone, on_delete=models.DO_NOTHING, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class City(models.Model):
@@ -17,12 +23,18 @@ class City(models.Model):
     code = models.CharField(max_length=200, null=True)
     state = models.ForeignKey(State, on_delete=models.DO_NOTHING, blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class Hospital(models.Model):
     name = models.CharField(max_length=200)
     code = models.CharField(max_length=200, null=True)
     city = models.ForeignKey(City, on_delete=models.DO_NOTHING, blank=True, null=True)
     active = models.IntegerField(default=2)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Patient(models.Model):
@@ -41,6 +53,9 @@ class Patient(models.Model):
     created_on = models.DateTimeField(blank=True, null=True)
     active = models.IntegerField(default=2)
 
+    def __str__(self) -> str:
+        return self.name
+    
     @property
     def daily_checkups(self):
         return DailyCheckup.objects.filter(patient=self.id)
@@ -53,6 +68,9 @@ class DoctorData(models.Model):
     mobile_no = models.CharField(max_length=12, unique=True)
     hospital = models.ForeignKey(Hospital, on_delete=models.DO_NOTHING)
     active = models.IntegerField(default=2)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class DailyCheckup(models.Model):
